@@ -9,6 +9,23 @@ def reset_game(head, bodies):
     
     bodies.clear()
 
+def move(head):
+    if head.direction == "up":
+        y = head.ycor()
+        head.sety(y + 20)
+
+    if head.direction == "down":
+        y = head.ycor()
+        head.sety(y - 20)
+
+    if head.direction == "left":
+        x = head.xcor()
+        head.setx(x - 20)
+
+    if head.direction == "right":
+        x = head.xcor()
+        head.setx(x + 20)
+
 def add_body(bodies):
     new_body = turtle.Turtle()
     new_body.speed(0)

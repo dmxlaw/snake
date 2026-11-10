@@ -1,29 +1,11 @@
 import random
 import time
-import turtle
 from intitialize_components import initialize_components
-from movements import add_body, check_collisions, move_body, reset_game
+from movements import add_body, check_collisions, move, move_body, reset_game
 
 
 bodies = []
 board, head, food = initialize_components()
-
-def move():
-    if head.direction == "up":
-        y = head.ycor()
-        head.sety(y + 20)
-
-    if head.direction == "down":
-        y = head.ycor()
-        head.sety(y - 20)
-
-    if head.direction == "left":
-        x = head.xcor()
-        head.setx(x - 20)
-
-    if head.direction == "right":
-        x = head.xcor()
-        head.setx(x + 20)
 
 def go_up():
     if head.direction != "down":
@@ -62,7 +44,7 @@ while True:
         add_body(bodies)
     move_body(bodies, head)
 
-    move()
+    move(head)
 
     check_collisions(bodies, head)
     time.sleep(0.1)
