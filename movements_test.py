@@ -1,7 +1,7 @@
 import turtle
 from unittest.mock import patch
 
-from movements import add_body, move, reset_game
+from movements import add_body, check_collisions, move, move_body, reset_game
 
 def create_head():
         head = turtle.Turtle()
@@ -52,63 +52,107 @@ def test_reset_game__bodies_cleared():
 
 
 def test_move__head_up__moves_up():
-     head = create_head()
-     head.direction = "up"
-     head.goto(0,0)
+    head = create_head()
+    head.direction = "up"
+    head.goto(0,0)
 
-     move(head)
+    move(head)
 
-     assert head.pos() == (0.00, 20.00)
+    assert head.pos() == (0.00, 20.00)
 
 def test_move__head_down__moves_down():
-     head = create_head()
-     head.direction = "down"
-     head.goto(0,0)
+    head = create_head()
+    head.direction = "down"
+    head.goto(0,0)
 
-     move(head)
+    move(head)
 
-     assert head.pos() == (0.00, -20.00)
+    assert head.pos() == (0.00, -20.00)
 
 def test_move__head_left__moves_left():
-     head = create_head()
-     head.direction = "left"
-     head.goto(0,0)
+    head = create_head()
+    head.direction = "left"
+    head.goto(0,0)
 
-     move(head)
+    move(head)
 
-     assert head.pos() == (-20.00, 0.00)
+    assert head.pos() == (-20.00, 0.00)
 
 def test_move__head_right__moves_right():
-     head = create_head()
-     head.direction = "right"
-     head.goto(0,0)
+    head = create_head()
+    head.direction = "right"
+    head.goto(0,0)
 
-     move(head)
+    move(head)
 
-     assert head.pos() == (20.00, 0.00)
+    assert head.pos() == (20.00, 0.00)
 
 def test_move__head_erroneous_dir__no_movement():
-     head = create_head()
-     head.direction = "erroneous_dir"
-     head.goto(0,0)
+    head = create_head()
+    head.direction = "erroneous_dir"
+    head.goto(0,0)
 
-     move(head)
+    move(head)
 
-     assert head.pos() == (0.00, 0.00)
+    assert head.pos() == (0.00, 0.00)
 
 
 def test_add_body__no_body__adds_a_body():
-     bodies = []
-     add_body(bodies)
-     
-     assert len(bodies) == 1
+    bodies = []
+    add_body(bodies)
+    
+    assert len(bodies) == 1
 
 def test_add_body__one_body__adds_a_body():
-     bodies = [create_head()]
-     add_body(bodies)
+    bodies = [create_head()]
+    add_body(bodies)
 
-     assert len(bodies) == 2
+    assert len(bodies) == 2
 
 
-def test_move_body__():
-     pass
+def test_move_body__one_body__moves_to_head_pos():
+    head = create_head()
+    head.goto(10, 10)
+    body_1 = create_head()
+    body_1.goto(0,0)
+    bodies = [body_1]
+
+    move_body(bodies, head)
+
+    assert body_1.pos() == head.pos()
+
+def test_move_body__multiple_bodies__moves_bodies_in_order():
+    head = create_head()
+    head.goto(10, 10)
+    body_1 = create_head()
+    body_1.goto(0,0)
+    body_2 = create_head()
+    body_2.goto(1,1)
+    body_3 = create_head()
+    body_3.goto(2,2)
+    bodies = [body_1, body_2, body_3]
+
+    move_body(bodies, head)
+
+    assert body_2.pos() == (0,0)
+    assert body_3.pos() == (1,1)
+
+@patch("movements.reset_game")
+def test_check_collisions__no_collisions__continue_game(mock_reset_game):
+    head = create_head()
+    head.goto(10, 10)
+    body_1 = create_head()
+    body_1.goto(40, 40)
+
+    check_collisions([body_1], head)
+    mock_reset_game.assert_not_called()
+
+@patch("movements.reset_game")
+def test_check_collisions__collisions__reset_game(mock_reset_game):
+    head = create_head()
+    head.goto(10, 10)
+    body_1 = create_head()
+    body_1.goto(20, 20)
+
+    check_collisions([body_1], head)
+    mock_reset_game.assert_called_once()
